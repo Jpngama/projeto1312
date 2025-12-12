@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Parabéns — Minha Princesa</title>
+  <style>
+    :root{
+      --bg:#0f1724;
+      --card:#0b1220;
+      --accent:#ff7ab6;
+      --accent-2:#ffd36b;
+      --glass: rgba(255,255,255,0.06);
+      --glass-2: rgba(255,255,255,0.03);
+      --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:var(--font-sans);background:radial-gradient(1200px 600px at 10% 10%, rgba(255,122,182,0.07), transparent), radial-gradient(1000px 500px at 90% 90%, rgba(255,211,107,0.03), transparent), var(--bg);color:#fff}
+
+    .wrap{min-height:100%;display:grid;place-items:center;padding:36px}
+    .card{width:min(920px,95%);background:linear-gradient(180deg,var(--card),#071021);border-radius:18px;padding:34px;box-shadow:0 10px 30px rgba(2,6,23,0.7);position:relative;overflow:hidden}
+
+    .message{font-size:clamp(22px,4.5vw,44px);line-height:1.02;font-weight:700;text-align:center;letter-spacing:1px;padding:10px 20px;color:linear-gradient(90deg,var(--accent),#fff);}
+    .sub{margin-top:10px;text-align:center;font-weight:600;opacity:0.85}
+
+    .hero{display:flex;gap:28px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+    .left{flex:1;min-width:260px}
+    .right{width:340px;min-width:240px;display:flex;flex-direction:column;align-items:center}
+
+    .note{margin-top:12px;font-size:15px;color:#cbd5e1}
+
+    /* Botão fujão */
+    .btn-wrap{position:relative;height:220px;width:100%;display:flex;align-items:center;justify-content:center}
+    .run-btn{
+      appearance:none;border:0;padding:16px 26px;border-radius:999px;font-weight:800;font-size:16px;cursor:pointer;background:linear-gradient(135deg,var(--accent),#ff4d8d);color:#111;box-shadow:0 8px 30px rgba(255,122,182,0.18);position:relative;transition:transform .12s ease,box-shadow .12s ease;user-select:none}
+    .run-btn:active{transform:scale(.98)}
+
+    .heart{font-size:48px;margin-bottom:6px;display:block;text-align:center}
+
+    /* little hearts animation on success */
+    .hearts-container{position:absolute;inset:0;pointer-events:none}
+
+    /* footer small */
+    .footer{margin-top:18px;text-align:center;font-size:13px;color:#9aa7bd}
+
+    /* accessibility focus */
+    .run-btn:focus{outline:3px solid rgba(255,122,182,0.18);outline-offset:6px}
+
+    /* confetti pieces */
+    .confetti{position:absolute;width:10px;height:14px;opacity:0.95;border-radius:2px}
+
+    @media (max-width:640px){
+      .right{width:100%}
+      .btn-wrap{height:180px}
+      .card{padding:22px}
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card" role="region" aria-label="Parabéns">
+      <div class="hero">
+        <div class="left">
+          <div class="message" id="mainMessage">PARABÉNS MINHA PRINCESA EU TE AMO</div>
+          <div class="sub">Surpresa digital pela sua noite especial 💖</div>
+          <div class="note">Toque ou tente clicar no botão — mas ele é bem tímido 😄</div>
+        </div>
+        <div class="right">
+          <div class="heart" aria-hidden>💗</div>
+          <div class="btn-wrap">
+            <button id="runBtn" class="run-btn" aria-label="Botão fujão">Tente me pegar</button>
+            <div class="hearts-container" id="hearts"></div>
+          </div>
+          <div class="footer">Se conseguir clicar, prepare-se para uma surpresa ✨</div>
+        </div>
+      </div>
+      <div id="confetti-root" style="position:absolute;inset:0;pointer-events:none"></div>
+    </section>
+  </main>
+
+  <script>
+    // Botão que foge do cursor
+    (function(){
+      const btn = document.getElementById('runBtn');
+      const wrap = btn.parentElement;
+      const confettiRoot = document.getElementById('confetti-root');
+      const hearts = document.getElementById('hearts');
+      let attempts = 0;
+
+      function rand(min,max){return Math.random()*(max-min)+min}
+
+      function moveButtonAway(){
+        const area = wrap.getBoundingClientRect();
+        const btnRect = btn.getBoundingClientRect();
+        const maxX = area.width - btnRect.width - 8;
+        const maxY = area.height - btnRect.height - 8;
+        const x = Math.max(8, Math.min(maxX, rand(0, maxX)));
+        const y = Math.max(8, Math.min(maxY, rand(0, maxY)));
+        btn.style.transform = `translate(${x - (area.width - btnRect.width)/2}px, ${y - (area.height - btnRect.height)/2}px)`;
+        attempts++;
+      }
+
+      // Move on mouseenter or touchstart
+      btn.addEventListener('mouseenter', (e)=>{
+        // small probability to allow click after a few attempts
+        if(attempts > 6 && Math.random() < 0.18){
+          // stay
+          return;
+        }
+        moveButtonAway();
+      });
+
+      btn.addEventListener('touchstart', (e)=>{
+        e.preventDefault();
+        moveButtonAway();
+      }, {passive:false});
+
+      // If user manages to click -> celebration
+      btn.addEventListener('click', (e)=>{
+        e.preventDefault();
+        celebrate();
+      });
+
+      function celebrate(){
+        createConfetti(80);
+        spawnHearts(12);
+        // gentle shake
+        btn.animate([
+          { transform: btn.style.transform + ' scale(1)' },
+          { transform: btn.style.transform + ' scale(1.06)' },
+          { transform: btn.style.transform + ' scale(1)' }
+        ], { duration: 500 });
+
+        // optional text change
+        const msg = document.getElementById('mainMessage');
+        msg.textContent = 'FELIZ ANIVERSÁRIO, AMOR! 💖'
+      }
+
+      // confetti implementation (simple DOM particles)
+      function createConfetti(count){
+        for(let i=0;i<count;i++){
+          const c = document.createElement('div');
+          c.className = 'confetti';
+          const w = Math.round(rand(6,12));
+          c.style.width = w + 'px';
+          c.style.height = Math.round(rand(8,16)) + 'px';
+          c.style.left = Math.round(rand(10, window.innerWidth-10)) + 'px';
+          c.style.top = '-20px';
+          c.style.background = randomColor();
+          c.style.transform = `rotate(${rand(0,360)}deg)`;
+          confettiRoot.appendChild(c);
+          // animate
+          const fall = c.animate([
+            { transform: `translateY(0) rotate(${rand(0,360)}deg)`, opacity:1 },
+            { transform: `translateY(${window.innerHeight + 200}px) rotate(${rand(360,720)}deg)`, opacity:0.9 }
+          ], { duration: rand(1400,2600), easing:'cubic-bezier(.2,.7,.3,1)' });
+          fall.onfinish = ()=>{ c.remove(); }
+        }
+      }
+
+      function randomColor(){
+        const palette = ['#ff7ab6','#ffd36b','#7be0ff','#a28bff','#ff9e7a'];
+        return palette[Math.floor(Math.random()*palette.length)];
+      }
+
+      // spawn small floating hearts near the button
+      function spawnHearts(n){
+        for(let i=0;i<n;i++){
+          const h = document.createElement('div');
+          h.textContent = '💘';
+          h.style.position = 'absolute';
+          h.style.left = (btn.offsetLeft + btn.offsetWidth/2 + rand(-60,60)) + 'px';
+          h.style.top = (btn.offsetTop + btn.offsetHeight/2) + 'px';
+          h.style.fontSize = Math.round(rand(12,28))+'px';
+          h.style.pointerEvents = 'none';
+          hearts.appendChild(h);
+          const anim = h.animate([
+            { transform: 'translateY(0) scale(0.9)', opacity:1 },
+            { transform: `translateY(${rand(-120,-30)}px) scale(1.2)`, opacity:0 }
+          ], { duration: rand(900,1600), easing:'ease-out' });
+          anim.onfinish = ()=>{ h.remove(); }
+        }
+      }
+
+      // keyboard accessible trigger
+      btn.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); celebrate(); }
+      });
+
+      // center initial position
+      btn.style.transform = 'translate(0,0)';
+
+    })();
+  </script>
+</body>
+</html>
