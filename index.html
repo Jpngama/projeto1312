@@ -209,20 +209,7 @@
       '',
       '',
       '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
+      ''
     ];
 
     btn.addEventListener('click', () => {
@@ -294,10 +281,6 @@
       photoElements.forEach((photo, i) => {
         setTimeout(() => {
           photo.classList.add('show');
-          window.scrollTo({
-            top: document.body.scrollHeight,
-            behavior: 'smooth'
-          });
         }, 3000 + (i * 2500));
       });
     }
